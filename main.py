@@ -1,32 +1,15 @@
-from typing import Union
-
+import dotenv
 from fastapi import FastAPI
 
-app = FastAPI()
+from database import init_db
+from routes.reviews import router as reviews_router
 
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
+API_VERSION = "v1"
 
+dotenv.load_dotenv()
 
-@app.post("/reviews")
-def classify_reviews() -> Union[str, int]:
-    return "positive"
+app = FastAPI(root_path=f'/api/{API_VERSION}', title='OrganIA Challenge')
+app.include_router(reviews_router, prefix='/reviews', tags=['reviews'])
 
-
-@app.get("/reviews")
-def get_reviews() -> Union[str, list]:
-    return ["review1", "review2"]
-
-
-@app.get("/reviews/report")
-def get_reviews_report(start_date: str, end_date: str):
-    return {"start_date": start_date, "end_date": end_date}
-
-
-@app.get("/reviews/{review_id}")
-def get_review(review_id: int):
-    return {"review_id": review_id}
-
-
+init_db()
