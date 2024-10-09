@@ -9,7 +9,7 @@ API_VERSION = "v1"
 
 dotenv.load_dotenv()
 
-app = FastAPI(root_path=f'/api/{API_VERSION}', title='OrganIA Challenge')
-app.include_router(reviews_router, prefix='/reviews', tags=['reviews'])
+app = FastAPI(root_path=f"/api/{API_VERSION}", title="OrganIA Challenge")
+app.include_router(reviews_router, prefix="/reviews", tags=["reviews"])
 
 init_db()

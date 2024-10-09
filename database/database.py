@@ -7,5 +7,5 @@ db = PostgresqlDatabase(
     user=settings.POSTGRES_USER,
     password=settings.POSTGRES_PASSWORD,
     host=settings.POSTGRES_HOST,
-    port=settings.POSTGRES_PORT
+    port=settings.POSTGRES_PORT,
 )
