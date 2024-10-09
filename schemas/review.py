@@ -9,8 +9,8 @@ class ReviewCreate(BaseModel):
     """
 
     reviewer: str
-    review_date: datetime.datetime
-    review_comment: int
+    review_date: datetime.date
+    review_comment: str
 
 
 class ReviewResponse(BaseModel):
@@ -20,6 +20,6 @@ class ReviewResponse(BaseModel):
 
     id: int
     reviewer: str
-    review_date: datetime.datetime
-    review_comment: int
-    review_rating: str
+    review_date: datetime.date
+    review_comment: str
+    review_classification: str

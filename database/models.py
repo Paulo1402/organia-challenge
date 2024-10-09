@@ -7,7 +7,7 @@ from database.database import db
 
 class BaseModel(Model):
     """
-    Model base para todos os modelos
+    Model base para todos os outros
     """
 
     created_at = DateTimeField(default=datetime.datetime.now)
@@ -15,7 +15,7 @@ class BaseModel(Model):
 
     def save(self, *args, **kwargs):
         """
-        Salva o modelo no banco de dados
+        Salva o model no banco de dados
         """
         if self._pk is not None:
             self.updated_at = datetime.datetime.now()
@@ -24,7 +24,7 @@ class BaseModel(Model):
 
     class Meta:
         """
-        Meta informações do modelo
+        Meta informações do model
         """
 
         database = db
@@ -32,12 +32,10 @@ class BaseModel(Model):
 
 class Review(BaseModel):
     """
-    Modelo de avaliação
+    Review Model
     """
 
     reviewer = CharField()
     review_date = DateField()
-    review_comment = IntegerField()
-    review_rating = TextField(
-        choices=["positive", "neutral", "negative"]
-    )
+    review_comment = TextField()
+    review_classification = TextField(choices=["positive", "neutral", "negative"])

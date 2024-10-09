@@ -2,8 +2,9 @@ import datetime
 
 from fastapi import APIRouter, HTTPException
 
-from schemas.review import ReviewResponse
+from schemas.review import ReviewResponse, ReviewCreate
 from database.models import Review
+from services.review_classifier import BertReviewClassifier
 
 router = APIRouter()
 
@@ -27,7 +28,7 @@ async def read_reviews(page: int = 0, page_size: int = 10):
                 reviewer=review.reviewer,
                 review_date=review.review_date,
                 review_comment=review.review_comment,
-                review_rating=review.review_rating,
+                review_classification=review.review_classification,
             )
         )
 
@@ -35,7 +36,9 @@ async def read_reviews(page: int = 0, page_size: int = 10):
 
 
 @router.get("/report")
-async def report_reviews(start_date: datetime.date, end_date: datetime.date):
+async def report_reviews(
+    start_date: datetime.date, end_date: datetime.date = datetime.date.today()
+):
     """
     Retorna um relatório de reviews
 
@@ -43,10 +46,48 @@ async def report_reviews(start_date: datetime.date, end_date: datetime.date):
     :param end_date:
     :return:
     """
-    return {"message": "Reporting all reviews"}
+    reviews = Review.select().where(
+        (Review.review_date >= start_date) & (Review.review_date <= end_date)
+    )
+
+    positive_reviews = 0
+    neutral_reviews = 0
+    negative_reviews = 0
+
+    reviews_list = []
+
+    for review in reviews:
+        if review.review_classification == "positive":
+            positive_reviews += 1
+
+        if review.review_classification == "neutral":
+            neutral_reviews += 1
+
+        if review.review_classification == "negative":
+            negative_reviews += 1
+
+        reviews_list.append(
+            ReviewResponse(
+                id=review.id,
+                reviewer=review.reviewer,
+                review_date=review.review_date,
+                review_comment=review.review_comment,
+                review_classification=review.review_classification,
+            )
+        )
+
+    return {
+        "report": {
+            "positive_reviews": positive_reviews,
+            "neutral_reviews": neutral_reviews,
+            "negative_reviews": negative_reviews,
+            "total_reviews": positive_reviews + neutral_reviews + negative_reviews,
+        },
+        "reviews": reviews_list,
+    }
 
 
-@router.get("/{review_id}")
+@router.get("/{review_id}", response_model=ReviewResponse)
 async def read_review(review_id: int):
     """
     Retorna um review específico
@@ -64,15 +105,33 @@ async def read_review(review_id: int):
         reviewer=review.reviewer,
         review_date=review.review_date,
         review_comment=review.review_comment,
-        review_rating=review.review_rating,
+        review_classification=review.review_classification,
     )
 
 
-@router.post("/")
-async def create_review():
+@router.post("/", response_model=ReviewResponse)
+async def create_review(review: ReviewCreate):
     """
     Cria um novo review
 
+    :param review:
     :return:
     """
-    return {"review_id": 2, "content": "Awesome product!"}
+
+    classifier = BertReviewClassifier()
+    classification = classifier.classify(review.review_comment)
+
+    review = Review.create(
+        reviewer=review.reviewer,
+        review_date=review.review_date,
+        review_comment=review.review_comment,
+        review_classification=classification,
+    )
+
+    return ReviewResponse(
+        id=review.id,
+        reviewer=review.reviewer,
+        review_date=review.review_date,
+        review_comment=review.review_comment,
+        review_classification=review.review_classification,
+    )

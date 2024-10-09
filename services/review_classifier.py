@@ -9,7 +9,7 @@ class ReviewClassifier(ABC):
     """
 
     @abstractmethod
-    def classify(self, review: str) -> int:
+    def classify(self, review: str) -> str:
         """
         Classifica uma avaliação
         :param review:
@@ -30,7 +30,7 @@ class BertReviewClassifier(ReviewClassifier):
             device=0,
         )
 
-    def classify(self, review: str) -> int:
+    def classify(self, review: str) -> str:
         """
         Classifica uma avaliação
         :param review:
@@ -40,16 +40,16 @@ class BertReviewClassifier(ReviewClassifier):
         label = result[0]["label"]
 
         if label == "1 star":
-            return 1
+            return "negative"
 
         if label == "2 stars":
-            return 2
+            return "negative"
 
         if label == "3 stars":
-            return 3
+            return "neutral"
 
         if label == "4 stars":
-            return 4
+            return "positive"
 
         if label == "5 stars":
-            return 5
+            return "positive"
