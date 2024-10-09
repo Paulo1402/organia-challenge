@@ -9,6 +9,7 @@ class BaseModel(Model):
     """
     Model base para todos os modelos
     """
+
     created_at = DateTimeField(default=datetime.datetime.now)
     updated_at = DateTimeField(default=datetime.datetime.now)
 
@@ -25,6 +26,7 @@ class BaseModel(Model):
         """
         Meta informações do modelo
         """
+
         database = db
 
 
@@ -32,6 +34,10 @@ class Review(BaseModel):
     """
     Modelo de avaliação
     """
-    customer_name = CharField()
-    review_date = TextField()
+
+    reviewer = CharField()
+    review_date = DateField()
     review_comment = IntegerField()
+    review_rating = TextField(
+        choices=["positive", "neutral", "negative"]
+    )
