@@ -7,6 +7,11 @@ ROOT_PATH = os.path.dirname(os.path.dirname(__file__))
 
 
 class Settings(BaseSettings):
+    """
+    Configurações do sistema
+    """
+
+    ENVIRONMENT: str
     POSTGRES_HOST: str
     POSTGRES_PORT: int
     POSTGRES_USER: str
