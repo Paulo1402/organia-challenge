@@ -1,6 +1,17 @@
 from abc import ABC, abstractmethod
+from enum import Enum
 
 from transformers import pipeline
+
+
+class SentimentClassification(Enum):
+    """
+    Enum para classificação de sentimentos
+    """
+
+    POSITIVE = "Positivo"
+    NEUTRAL = "Neutro"
+    NEGATIVE = "Negativo"
 
 
 class ReviewClassifier(ABC):
@@ -9,11 +20,11 @@ class ReviewClassifier(ABC):
     """
 
     @abstractmethod
-    def classify(self, review: str) -> str:
+    def classify(self, review: str) -> SentimentClassification:
         """
         Classifica uma avaliação
-        :param review:
-        :return:
+        :param review: Avaliação
+        :return: Classificação
         """
         pass
 
@@ -30,26 +41,26 @@ class BertReviewClassifier(ReviewClassifier):
             device=0,
         )
 
-    def classify(self, review: str) -> str:
+    def classify(self, review: str) -> SentimentClassification:
         """
         Classifica uma avaliação
-        :param review:
-        :return:
+        :param review: Avaliação
+        :return: Classificação
         """
         result = self.sentiment_analyzer(review)
         label = result[0]["label"]
 
         if label == "1 star":
-            return "negative"
+            return SentimentClassification.NEGATIVE
 
         if label == "2 stars":
-            return "negative"
+            return SentimentClassification.NEGATIVE
 
         if label == "3 stars":
-            return "neutral"
+            return SentimentClassification.NEUTRAL
 
         if label == "4 stars":
-            return "positive"
+            return SentimentClassification.POSITIVE
 
         if label == "5 stars":
-            return "positive"
+            return SentimentClassification.POSITIVE

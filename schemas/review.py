@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 class ReviewCreate(BaseModel):
     """
-    Model de review para criação
+    Model para criação da avaliação
     """
 
     reviewer: str
@@ -15,7 +15,7 @@ class ReviewCreate(BaseModel):
 
 class ReviewResponse(BaseModel):
     """
-    Model de resposta da review
+    Model de resposta da avaliação
     """
 
     id: int
@@ -23,3 +23,25 @@ class ReviewResponse(BaseModel):
     review_date: datetime.date
     review_comment: str
     review_classification: str
+
+
+class ReviewReport(BaseModel):
+    """
+    Model para relatório de avaliações
+    """
+
+    start_date: datetime.date
+    end_date: datetime.date
+    positive_reviews: int
+    neutral_reviews: int
+    negative_reviews: int
+    total_reviews: int
+
+
+class ReviewReportResponse(BaseModel):
+    """
+    Model de resposta do relatório de avaliações
+    """
+
+    report: ReviewReport
+    reviews: list[ReviewResponse]

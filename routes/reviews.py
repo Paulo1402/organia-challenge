@@ -2,21 +2,31 @@ import datetime
 
 from fastapi import APIRouter, HTTPException
 
-from schemas.review import ReviewResponse, ReviewCreate
+from schemas.review import (
+    ReviewResponse,
+    ReviewCreate,
+    ReviewReportResponse,
+    ReviewReport,
+)
 from database.models import Review
-from services.review_classifier import BertReviewClassifier
+from services.review_classifier import BertReviewClassifier, SentimentClassification
 
 router = APIRouter()
 
 
-@router.get("/", response_model=list[ReviewResponse])
-async def read_reviews(page: int = 0, page_size: int = 10):
+@router.get(
+    "/",
+    name="Listar avaliações",
+    description="Retorna uma lista de avaliações",
+    response_model=list[ReviewResponse],
+)
+async def read_reviews(page: int = 0, page_size: int = 10) -> list[ReviewResponse]:
     """
-    Retorna uma lista de reviews
+    Retorna uma lista de avaliações
 
-    :param page:
-    :param page_size:
-    :return:
+    :param page: Página
+    :param page_size: Tamanho da página
+    :return: Lista de avaliações
     """
     reviews = Review.select().offset(page).limit(page_size)
     reviews_list = []
@@ -35,16 +45,21 @@ async def read_reviews(page: int = 0, page_size: int = 10):
     return reviews_list
 
 
-@router.get("/report")
+@router.get(
+    "/report",
+    name="Relatório de avaliações",
+    description="Retorna um relatório de avaliações dentro de um intervalo de datas",
+    response_model=ReviewReportResponse,
+)
 async def report_reviews(
     start_date: datetime.date, end_date: datetime.date = datetime.date.today()
-):
+) -> ReviewReportResponse:
     """
-    Retorna um relatório de reviews
+    Retorna um relatório de avaliações dentro de um intervalo de datas
 
-    :param start_date:
-    :param end_date:
-    :return:
+    :param start_date: Data inicial
+    :param end_date: Data final
+    :return: Relatório de avaliações
     """
     reviews = Review.select().where(
         (Review.review_date >= start_date) & (Review.review_date <= end_date)
@@ -57,13 +72,13 @@ async def report_reviews(
     reviews_list = []
 
     for review in reviews:
-        if review.review_classification == "positive":
+        if review.review_classification == SentimentClassification.POSITIVE.value:
             positive_reviews += 1
 
-        if review.review_classification == "neutral":
+        if review.review_classification == SentimentClassification.NEUTRAL.value:
             neutral_reviews += 1
 
-        if review.review_classification == "negative":
+        if review.review_classification == SentimentClassification.NEGATIVE.value:
             negative_reviews += 1
 
         reviews_list.append(
@@ -76,24 +91,31 @@ async def report_reviews(
             )
         )
 
-    return {
-        "report": {
-            "positive_reviews": positive_reviews,
-            "neutral_reviews": neutral_reviews,
-            "negative_reviews": negative_reviews,
-            "total_reviews": positive_reviews + neutral_reviews + negative_reviews,
-        },
-        "reviews": reviews_list,
-    }
+    return ReviewReportResponse(
+        report=ReviewReport(
+            start_date=start_date,
+            end_date=end_date,
+            positive_reviews=positive_reviews,
+            neutral_reviews=neutral_reviews,
+            negative_reviews=negative_reviews,
+            total_reviews=len(reviews_list),
+        ),
+        reviews=reviews_list,
+    )
 
 
-@router.get("/{review_id}", response_model=ReviewResponse)
-async def read_review(review_id: int):
+@router.get(
+    "/{review_id}",
+    name="Consultar avaliação",
+    description="Retorna uma avaliação específica",
+    response_model=ReviewResponse,
+)
+async def read_review(review_id: int) -> ReviewResponse:
     """
-    Retorna um review específico
+    Retorna uma avaliação específica
 
-    :param review_id:
-    :return:
+    :param review_id: ID da avaliação
+    :return: Avaliação
     """
     review = Review.get_or_none(id=review_id)
 
@@ -109,15 +131,20 @@ async def read_review(review_id: int):
     )
 
 
-@router.post("/", response_model=ReviewResponse)
-async def create_review(review: ReviewCreate):
+@router.post(
+    "/",
+    name="Criar avaliação",
+    description="Cria uma nova avaliação",
+    response_model=ReviewResponse,
+    status_code=201,
+)
+async def create_review(review: ReviewCreate) -> ReviewResponse:
     """
-    Cria um novo review
+    Cria uma nova avaliação
 
-    :param review:
-    :return:
+    :param review: Avaliação a ser criada
+    :return: Avaliação criada
     """
-
     classifier = BertReviewClassifier()
     classification = classifier.classify(review.review_comment)
 
@@ -125,7 +152,7 @@ async def create_review(review: ReviewCreate):
         reviewer=review.reviewer,
         review_date=review.review_date,
         review_comment=review.review_comment,
-        review_classification=classification,
+        review_classification=classification.value,
     )
 
     return ReviewResponse(

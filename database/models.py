@@ -1,8 +1,9 @@
 import datetime
 
-from peewee import *
+from peewee import Model, DateTimeField, TextField, CharField, DateField
 
 from database.database import db
+from services.review_classifier import SentimentClassification
 
 
 class BaseModel(Model):
@@ -13,7 +14,7 @@ class BaseModel(Model):
     created_at = DateTimeField(default=datetime.datetime.now)
     updated_at = DateTimeField(default=datetime.datetime.now)
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> bool | int:
         """
         Salva o model no banco de dados
         """
@@ -38,4 +39,6 @@ class Review(BaseModel):
     reviewer = CharField()
     review_date = DateField()
     review_comment = TextField()
-    review_classification = TextField(choices=["positive", "neutral", "negative"])
+    review_classification = CharField(
+        choices=[(tag, tag.value) for tag in SentimentClassification]
+    )
