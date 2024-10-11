@@ -4,14 +4,14 @@ from .review_classifier import BertReviewClassifier
 def test_bert_review_classifier():
     classifier = BertReviewClassifier()
 
-    review = "This is a great product!"
+    review = "Ótimo produto!"
     classification = classifier.classify(review)
-    assert classification == "positive"
+    assert classification.value == "Positivo"
 
-    review = "This is a terrible product!"
+    review = "Produto péssimo!"
     classification = classifier.classify(review)
-    assert classification == "negative"
+    assert classification.value == "Negativo"
 
-    review = "This is a normal product."
+    review = "Produto mediano"
     classification = classifier.classify(review)
-    assert classification == "neutral"
+    assert classification.value == "Neutro"

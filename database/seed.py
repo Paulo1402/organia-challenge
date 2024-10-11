@@ -21,25 +21,25 @@ class SeedDatabase:
                 "reviewer": "John Doe",
                 "review_date": "2021-01-01",
                 "review_comment": "Ótimo produto",
-                "review_classification": "positive",
+                "review_classification": "Positivo",
             },
             {
                 "reviewer": "Jane Doe",
                 "review_date": "2021-01-02",
                 "review_comment": "Produto ruim",
-                "review_classification": "negative",
+                "review_classification": "Negativo",
             },
             {
                 "reviewer": "Alice",
                 "review_date": "2021-01-03",
-                "review_comment": "Produto médio",
-                "review_classification": "neutral",
+                "review_comment": "Produto ok",
+                "review_classification": "Neutro",
             },
             {
                 "reviewer": "Bob",
                 "review_date": "2021-01-04",
                 "review_comment": "Excelente produto",
-                "review_classification": "positive",
+                "review_classification": "Positivo",
             },
         ]
 
@@ -63,7 +63,9 @@ class SeedDatabase:
 
         if self.drop_tables:
             if settings.ENVIRONMENT not in ["development", "testing"]:
-                raise EnvironmentError("Environment must be development or testing to use `drop_tables`")
+                raise EnvironmentError(
+                    "Environment must be development or testing to use `drop_tables`"
+                )
 
             self._db.drop_tables(self.tables)
 
