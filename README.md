@@ -31,9 +31,9 @@ POSTGRES_PASSWORD=postgres
 ```
 
 ## ▶️ Execução
-Para rodar o projeto primeiro é necessário subir o banco de dados, para isso execute o seguinte comando:
+Para rodar o projeto, primeiro é necessário subir o banco de dados, para isso execute o seguinte comando:
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 Após o banco de dados estar rodando, execute o seguinte comando para rodar o projeto:
