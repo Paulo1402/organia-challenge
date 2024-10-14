@@ -9,7 +9,12 @@ from schemas.review import (
     ReviewReport,
 )
 from database.models import Review
-from services.review_classifier import BertReviewClassifier, SentimentClassification
+from services.review_classifier import (
+    SentimentClassification,
+    ReviewClassifierFactory,
+    InvalidClassifierError,
+    ClassifierError,
+)
 
 router = APIRouter()
 
@@ -138,15 +143,33 @@ async def read_review(review_id: int) -> ReviewResponse:
     response_model=ReviewResponse,
     status_code=201,
 )
-async def create_review(review: ReviewCreate) -> ReviewResponse:
+async def create_review(
+    review: ReviewCreate, classifier: str = "bert"
+) -> ReviewResponse:
     """
     Cria uma nova avaliação
 
     :param review: Avaliação a ser criada
+    :param classifier: Classificador a ser utilizado
+
     :return: Avaliação criada
     """
-    classifier = BertReviewClassifier()
-    classification = classifier.classify(review.review_comment)
+
+    try:
+        classifier = ReviewClassifierFactory.create_review_classifier(classifier)
+        classification = classifier.classify(review.review_comment)
+    except InvalidClassifierError:
+        available_classifiers = ", ".join(ReviewClassifierFactory().classifiers)
+
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid classifier! Available classifiers: {available_classifiers}",
+        )
+    except ClassifierError:
+        raise HTTPException(
+            status_code=500,
+            detail="An error occurred while classifying the review",
+        )
 
     review = Review.create(
         reviewer=review.reviewer,

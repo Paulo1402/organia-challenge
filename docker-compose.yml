@@ -16,22 +16,22 @@ services:
     networks:
       - db-backend
 
-  backend:
-    build: ./
-    container_name: backend
-    depends_on:
-      - db
-    restart: always
-    env_file:
-      - .env
-    working_dir: /app
-    volumes:
-      - .:/app
-    command: ["fastapi", "dev"]
-    ports:
-      - "8000:8000"
-    networks:
-      - db-backend
+#  backend:
+#    build: ./
+#    container_name: backend
+#    depends_on:
+#      - db
+#    restart: always
+#    env_file:
+#      - .env
+#    working_dir: /app
+#    volumes:
+#      - .:/app
+#    command: ["fastapi", "dev"]
+#    ports:
+#      - "8000:8000"
+#    networks:
+#      - db-backend
 
 networks:
   db-backend:
