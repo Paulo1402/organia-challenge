@@ -1,24 +1,5 @@
 <template>
-  <div>
-   <v-btn color="success" prepend-icon="fa fa-home">Hello World!</v-btn>
-  </div>
+  <router-view />
 </template>
 
-<script setup lang="ts">
-
-</script>
-
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
-</style>
+<script setup lang="ts"></script>
