@@ -1,12 +1,13 @@
 import datetime
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Response
 
 from schemas.review import (
     ReviewResponse,
     ReviewCreate,
     ReviewReportResponse,
     ReviewReport,
+    ReviewUpdate,
 )
 from database.models import Review
 from services.review_classifier import (
@@ -19,16 +20,27 @@ from services.review_classifier import (
 router = APIRouter()
 
 
+@router.get("/classifiers", name="Listar classificadores", description="Retorna uma lista de classificadores disponíveis")
+async def list_classifiers() -> list[str]:
+    """
+    Retorna uma lista de classificadores disponíveis
+
+    :return: Lista de classificadores disponíveis
+    """
+    return ReviewClassifierFactory().classifiers
+
+
 @router.get(
     "/",
     name="Listar avaliações",
     description="Retorna uma lista de avaliações",
     response_model=list[ReviewResponse],
 )
-async def read_reviews(page: int = 0, page_size: int = 10) -> list[ReviewResponse]:
+async def read_reviews(response: Response, page: int = 0, page_size: int = 10) -> list[ReviewResponse]:
     """
     Retorna uma lista de avaliações
 
+    :param response: Resposta
     :param page: Página
     :param page_size: Tamanho da página
     :return: Lista de avaliações
@@ -46,6 +58,10 @@ async def read_reviews(page: int = 0, page_size: int = 10) -> list[ReviewRespons
                 review_classification=review.review_classification,
             )
         )
+
+    response.headers["X-Total-Count"] = str(Review.select().count())
+    response.headers["X-Page-Size"] = str(page_size)
+    response.headers["X-Page"] = str(page)
 
     return reviews_list
 
@@ -185,3 +201,73 @@ async def create_review(
         review_comment=review.review_comment,
         review_classification=review.review_classification,
     )
+
+@router.put(
+    "/{review_id}",
+    name="Atualizar avaliação",
+    description="Atualiza uma avaliação existente",
+    response_model=ReviewResponse,
+)
+async def update_review(review_id: int, review: ReviewCreate, classifier: str) -> ReviewResponse:
+    """
+    Atualiza uma avaliação existente
+
+    :param review_id: ID da avaliação
+    :param review: Avaliação a ser atualizada
+    :param classifier: Classificador a ser utilizado
+    :return: Avaliação atualizada
+    """
+    old_review = Review.get_or_none(id=review_id)
+
+    if not old_review:
+        raise HTTPException(status_code=404, detail="Review not found")
+
+    try:
+        classifier = ReviewClassifierFactory.create_review_classifier(classifier)
+        classification = classifier.classify(review.review_comment)
+    except InvalidClassifierError:
+        available_classifiers = ", ".join(ReviewClassifierFactory().classifiers)
+
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid classifier! Available classifiers: {available_classifiers}",
+        )
+    except ClassifierError:
+        raise HTTPException(
+            status_code=500,
+            detail="An error occurred while classifying the review",
+        )
+
+    old_review.reviewer = review.reviewer
+    old_review.review_date = review.review_date
+    old_review.review_comment = review.review_comment
+    old_review.review_classification = classification.value
+
+    old_review.save()
+
+    return ReviewResponse(
+        id=review.id,
+        reviewer=review.reviewer,
+        review_date=review.review_date,
+        review_comment=review.review_comment,
+        review_classification=classification.value,
+    )
+
+@router.delete(
+    "/{review_id}",
+    name="Deletar avaliação",
+    description="Deleta uma avaliação existente",
+    status_code=204,
+)
+async def delete_review(review_id: int):
+    """
+    Deleta uma avaliação existente
+
+    :param review_id: ID da avaliação
+    """
+    review = Review.get_or_none(id=review_id)
+
+    if not review:
+        raise HTTPException(status_code=404, detail="Review not found")
+
+    review.delete_instance()

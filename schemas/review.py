@@ -12,6 +12,12 @@ class ReviewCreate(BaseModel):
     review_date: datetime.date
     review_comment: str
 
+class ReviewUpdate(BaseModel):
+    """
+    Model para atualização da avaliação
+    """
+
+    review_comment: str
 
 class ReviewResponse(BaseModel):
     """

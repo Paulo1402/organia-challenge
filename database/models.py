@@ -42,3 +42,4 @@ class Review(BaseModel):
     review_classification = CharField(
         choices=[(tag, tag.value) for tag in SentimentClassification]
     )
+    classification_model = TextField(null=True)
