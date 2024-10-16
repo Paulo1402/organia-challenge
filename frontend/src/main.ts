@@ -9,11 +9,15 @@ import { aliases, fa } from "vuetify/iconsets/fa"
 
 import "./style.css"
 import App from "./App.vue"
+import { VDateInput } from 'vuetify/labs/VDateInput'
 
 import "vuetify/styles"
 
 const vuetify = createVuetify({
-  components,
+  components: {
+    ...components,
+    VDateInput
+  },
   directives,
   icons: {
     defaultSet: "fa",

@@ -7,22 +7,22 @@ const routes = [
     children: [
       {
         path: "",
-        name: "Home",
-        component: () => import("@/views/Home.vue"),
+        name: "home",
+        redirect: { name: "List Reviews" },
       },
       {
         path: "reviews",
-        name: "List Reviews",
+        name: "list-reviews",
         component: () => import("@/views/ListReviews.vue"),
       },
       {
         path: "reviews/new",
-        name: "New Review",
+        name: "new-review",
         component: () => import("@/views/SaveReview.vue"),
       },
       {
         path: "reviews/:id",
-        name: "Update Review",
+        name: "update-review",
         component: () => import("@/views/SaveReview.vue"),
       }
     ]
