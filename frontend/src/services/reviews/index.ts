@@ -1,15 +1,9 @@
 import axios from "axios";
+import { Review, ReviewCreate } from "./types";
 
 const axiosInstance = axios.create({
   baseURL: process.env.BACKEND_BASE_URL,
 });
-
-interface Review {
-  id?: number;
-  reviewer: string;
-  review_comment: string;
-  review_date: string;
-}
 
 class ReviewsService {
   getReviews = async () => {
@@ -17,22 +11,22 @@ class ReviewsService {
     return response.data;
   };
 
-  getReview = async (id: string) => {
+  getReview = async (id: number | string) => {
     const response = await axiosInstance.get(`reviews/${id}`);
     return response.data;
   };
 
-  createReview = async (review: Review) => {
+  createReview = async (review: ReviewCreate) => {
     const response = await axiosInstance.post("reviews", review);
     return response.data;
   };
 
-  updateReview = async (id: number, review: Review) => {
+  updateReview = async (id: number | string, review: Review) => {
     const response = await axiosInstance.put(`reviews/${id}`, review);
     return response.data;
   };
 
-  deleteReview = async (id: number) => {
+  deleteReview = async (id: number | string) => {
     const response = await axiosInstance.delete(`reviews/${id}`);
     return response.data;
   };

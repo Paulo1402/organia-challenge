@@ -8,7 +8,7 @@ const routes = [
       {
         path: "",
         name: "home",
-        redirect: { name: "List Reviews" },
+        redirect: { name: "list-reviews" },
       },
       {
         path: "reviews",
