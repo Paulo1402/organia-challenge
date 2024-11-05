@@ -54,6 +54,7 @@ async def read_reviews(response: Response, page: int = 0, page_size: int = 10) -
                 reviewer=review.reviewer,
                 review_date=review.review_date,
                 review_comment=review.review_comment,
+                review_classifier=review.review_classifier,
                 review_classification=review.review_classification,
             )
         )
@@ -147,6 +148,7 @@ async def read_review(review_id: int) -> ReviewResponse:
         reviewer=review.reviewer,
         review_date=review.review_date,
         review_comment=review.review_comment,
+        review_classifier=review.review_classifier,
         review_classification=review.review_classification,
     )
 
@@ -190,6 +192,7 @@ async def create_review(
         reviewer=review.reviewer,
         review_date=review.review_date,
         review_comment=review.review_comment,
+        review_classifier=classifier.name,
         review_classification=classification.value,
     )
 
@@ -198,6 +201,7 @@ async def create_review(
         reviewer=review.reviewer,
         review_date=review.review_date,
         review_comment=review.review_comment,
+        review_classifier=review.review_classifier,
         review_classification=review.review_classification,
     )
 
@@ -217,6 +221,7 @@ async def update_review(review_id: int, review: ReviewCreate, classifier: str) -
     :return: Avaliação atualizada
     """
     old_review = Review.get_or_none(id=review_id)
+    print(classifier)
 
     if not old_review:
         raise HTTPException(status_code=404, detail="Review not found")
@@ -240,6 +245,7 @@ async def update_review(review_id: int, review: ReviewCreate, classifier: str) -
     old_review.reviewer = review.reviewer
     old_review.review_date = review.review_date
     old_review.review_comment = review.review_comment
+    old_review.review_classifier = classifier
     old_review.review_classification = classification.value
 
     old_review.save()
@@ -249,6 +255,7 @@ async def update_review(review_id: int, review: ReviewCreate, classifier: str) -
         reviewer=review.reviewer,
         review_date=review.review_date,
         review_comment=review.review_comment,
+        review_classifier=review.review_classifier,
         review_classification=classification.value,
     )
 

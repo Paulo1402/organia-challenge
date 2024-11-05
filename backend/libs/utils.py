@@ -5,6 +5,20 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 ROOT_PATH = os.path.dirname(os.path.dirname(__file__))
 
+def find_env_file(folder: str) -> str:
+    """
+    Encontra o arquivo .env
+    :param folder: str
+    :return: str
+    """
+    if os.path.isfile(f"{folder}/.env"):
+        return f"{folder}/.env"
+
+    if folder == "/":
+        raise FileNotFoundError("Environment file not found")
+
+    return find_env_file(os.path.dirname(folder))
+
 
 class Settings(BaseSettings):
     """
@@ -19,7 +33,7 @@ class Settings(BaseSettings):
     POSTGRES_DB: str
 
     model_config = SettingsConfigDict(
-        env_file=f"{ROOT_PATH}/.env", env_file_encoding="utf-8"
+        env_file=find_env_file(ROOT_PATH), env_file_encoding="utf-8"
     )
 
 

@@ -35,6 +35,9 @@ class ReviewClassifier(ABC):
     Classe abstrata para classificação de avaliações
     """
 
+    def __init__(self, name: str):
+        self.name = name
+
     @abstractmethod
     def _classify(self, review: str) -> SentimentClassification:
         """
@@ -61,11 +64,13 @@ class BertReviewClassifier(ReviewClassifier):
     Classificador de avaliações usando BERT
     """
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
         self.sentiment_analyzer = pipeline(
             "sentiment-analysis",
             model="nlptown/bert-base-multilingual-uncased-sentiment",
-            device=0,
+            # device=0,
         )
 
     def _classify(self, review: str) -> SentimentClassification:
@@ -123,4 +128,4 @@ class ReviewClassifierFactory:
         if not classifier_class:
             raise InvalidClassifierError(f"{classifier} is not a valid classifier")
 
-        return classifier_class()
+        return classifier_class(classifier)

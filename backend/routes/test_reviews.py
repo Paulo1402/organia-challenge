@@ -1,3 +1,9 @@
+import sys
+import os
+
+# Adiciona o diretório do arquivo main.py ao sys.path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -33,6 +39,7 @@ def test_read_reviews(seed):
         assert review["reviewer"] == seed.reviews[i]["reviewer"]
         assert review["review_date"] == seed.reviews[i]["review_date"]
         assert review["review_comment"] == seed.reviews[i]["review_comment"]
+        assert review["review_classifier"] == seed.reviews[i]["review_classifier"]
         assert (
             review["review_classification"] == seed.reviews[i]["review_classification"]
         )
@@ -51,6 +58,7 @@ def test_read_review(seed):
     assert review["reviewer"] == seed.reviews[0]["reviewer"]
     assert review["review_date"] == seed.reviews[0]["review_date"]
     assert review["review_comment"] == seed.reviews[0]["review_comment"]
+    assert review["review_classifier"] == seed.reviews[i]["review_classifier"]
     assert review["review_classification"] == seed.reviews[0]["review_classification"]
 
 
@@ -63,6 +71,7 @@ def test_create_review(seed):
         "reviewer": "Charlie",
         "review_date": "2021-01-05",
         "review_comment": "Produto excelente",
+        "review_classifier": "bert",
     }
 
     response = client.post("/reviews/", json=new_review)
@@ -72,6 +81,7 @@ def test_create_review(seed):
     assert review["reviewer"] == new_review["reviewer"]
     assert review["review_date"] == new_review["review_date"]
     assert review["review_comment"] == new_review["review_comment"]
+    assert review["review_classifier"] == new_review["review_classifier"]
     assert review["review_classification"] == "Positivo"
 
 

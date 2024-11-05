@@ -21,24 +21,28 @@ class SeedDatabase:
                 "reviewer": "John Doe",
                 "review_date": "2021-01-01",
                 "review_comment": "Ótimo produto",
+                "review_classifier": "bert",
                 "review_classification": "Positivo",
             },
             {
                 "reviewer": "Jane Doe",
                 "review_date": "2021-01-02",
                 "review_comment": "Produto ruim",
+                "review_classifier": "bert",
                 "review_classification": "Negativo",
             },
             {
                 "reviewer": "Alice",
                 "review_date": "2021-01-03",
                 "review_comment": "Produto ok",
+                "review_classifier": "bert",
                 "review_classification": "Neutro",
             },
             {
                 "reviewer": "Bob",
                 "review_date": "2021-01-04",
                 "review_comment": "Excelente produto",
+                "review_classifier": "bert",
                 "review_classification": "Positivo",
             },
         ]
@@ -52,6 +56,7 @@ class SeedDatabase:
                 reviewer=review["reviewer"],
                 review_date=review["review_date"],
                 review_comment=review["review_comment"],
+                review_classifier=review["review_classifier"],
                 review_classification=review["review_classification"],
             )
 

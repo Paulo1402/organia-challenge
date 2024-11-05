@@ -11,6 +11,7 @@ class ReviewCreate(BaseModel):
     reviewer: str
     review_date: datetime.date
     review_comment: str
+    review_classifier: str
 
 class ReviewUpdate(BaseModel):
     """
@@ -28,6 +29,7 @@ class ReviewResponse(BaseModel):
     reviewer: str
     review_date: datetime.date
     review_comment: str
+    review_classifier: str
     review_classification: str
 
 
