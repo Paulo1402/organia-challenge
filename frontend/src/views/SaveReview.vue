@@ -4,7 +4,6 @@
       {{ mode == "new" ? "Criar avaliação" : "Atualizar avaliação" }}
     </h1>
 
-
     <v-form v-model="form" @submit.prevent="saveReview">
       <v-alert
         v-model="showError"
@@ -42,6 +41,7 @@
       ></v-textarea>
 
       <v-select
+        v-model="reviewClassifier"
         label="Modelos para classificação"
         no-data-text="Sem modelos para classificação"
         class="mb-4"
@@ -58,7 +58,7 @@
 </template>
 
 <script setup lang="ts">
-import { watch, ref } from "vue"
+import { watch, ref, useTemplateRef } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import dayjs from "dayjs"
 
@@ -67,6 +67,7 @@ import reviewsService from "@/services/reviews"
 const reviewer = ref("")
 const reviewDate = ref<Date>()
 const reviewComment = ref("")
+const reviewClassifier = ref("")
 
 const classifiers = ref<string[]>([])
 
@@ -84,8 +85,9 @@ if (mode.value === "edit") {
 
   reviewsService.getReview(reviewId).then((review) => {
     reviewer.value = review.reviewer
-    reviewDate.value = review.review_date
+    reviewDate.value = dayjs(review.review_date, "YYYY-MM-DD").toDate()
     reviewComment.value = review.review_comment
+    reviewClassifier.value = review.review_classifier
   })
 }
 
@@ -116,6 +118,7 @@ async function saveReview() {
     reviewer: reviewer.value,
     review_date: reviewDateFormated,
     review_comment: reviewComment.value,
+    review_classifier: reviewClassifier.value,
   }
 
   loading.value = true
@@ -123,10 +126,14 @@ async function saveReview() {
 
   try {
     if (mode.value === "new") {
-      await reviewsService.createReview(review)
+      await reviewsService.createReview(review, reviewClassifier.value)
     } else {
       const reviewId = route.params.id as string
-      await reviewsService.updateReview(reviewId, review)
+      await reviewsService.updateReview(
+        reviewId,
+        review,
+        reviewClassifier.value
+      )
     }
 
     loading.value = false

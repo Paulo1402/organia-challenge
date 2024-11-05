@@ -30,7 +30,7 @@ import { ref } from "vue"
 
 import ReviewCard from "@/components/ReviewCard.vue"
 import reviewsService from "@/services/reviews"
-import { Review } from "@/services/reviews/types";
+import { Review } from "@/services/reviews/types"
 
 const reviews = ref<Review[]>([])
 const loading = ref(true)
@@ -42,7 +42,8 @@ reviewsService
   })
   .catch((error) => {
     console.error(error)
-  }).finally(() => {
+  })
+  .finally(() => {
     loading.value = false
   })
 

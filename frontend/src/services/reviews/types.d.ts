@@ -7,7 +7,4 @@ export interface Review {
   review_classification: string
 }
 
-export type ReviewCreate = Omit<
-  Review,
-  "id" | "review_classifier" | "review_classification"
->
+export type ReviewSave = Omit<Review, "id" | "review_classifier" | "review_classification">
