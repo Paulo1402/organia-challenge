@@ -5,7 +5,6 @@ from peewee import Model, DateTimeField, TextField, CharField, DateField
 from database.database import db
 from services.review_classifier import SentimentClassification
 
-
 class BaseModel(Model):
     """
     Model base para todos os outros

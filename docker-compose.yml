@@ -16,22 +16,39 @@ services:
     networks:
       - db-backend
 
-#  backend:
-#    build: ./
-#    container_name: backend
-#    depends_on:
-#      - db
+  backend:
+    build: ./backend
+    container_name: backend
+    restart: always
+    depends_on:
+      - db
+    env_file:
+      - .env
+    volumes:
+      - ./backend:/app
+    working_dir: /app
+#    command: ["tail", "-f", "/dev/null"]
+    command: ["fastapi", "dev", "--host", "0.0.0.0"]
+    ports:
+      - "8000:8000"
+    networks:
+      - db-backend
+
+#  frontend:
+#    build: ./frontend
+#    container_name: frontend
 #    restart: always
+#    depends_on:
+#      - backend
 #    env_file:
 #      - .env
-#    working_dir: /app
 #    volumes:
-#      - .:/app
-#    command: ["fastapi", "dev"]
+#      - ./frontend:/app
+#    working_dir: /app
 #    ports:
-#      - "8000:8000"
+#      - "3000:3000"
 #    networks:
-#      - db-backend
+#        - db-backend
 
 networks:
   db-backend:

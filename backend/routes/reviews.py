@@ -7,7 +7,6 @@ from schemas.review import (
     ReviewCreate,
     ReviewReportResponse,
     ReviewReport,
-    ReviewUpdate,
 )
 from database.models import Review
 from services.review_classifier import (
